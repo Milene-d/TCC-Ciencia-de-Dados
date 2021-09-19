@@ -8,6 +8,7 @@ library(tm)
 library(RColorBrewer)
 library(cluster)
 library(ggplot2)
+library(fpc)
 
 tweets<-as.character(voto_jornal$Texto)
 head(tweets,5)
@@ -78,7 +79,6 @@ plot( 1:k.max , wss, type = "b" , pch = 19 , frame = FALSE ,
       xlab = "Número de clusters K", ylab = "Soma total dos quadrados dentro dos clusters") 
 
 #Silhouette Method
-library(fpc)
 pamk.best <- pamk(distancia)
 cat("Número de clusters estimado pelo método silhouette width:", pamk.best$nc, "\n")
 plot(pam(distancia, pamk.best$nc))
