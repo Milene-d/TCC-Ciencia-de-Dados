@@ -1,4 +1,3 @@
-#Coleta de dados#
 library(readxl)
 voto_jornal <- read_excel("C:/Users/milen/Desktop/jornal.xlsx")
 View(voto)
@@ -22,27 +21,28 @@ CORPO<-tm_map(CORPO, removeWords, stopwords("pt")) #Tirando as stopwords
 CORPO<-tm_map(CORPO, removeNumbers) #tirando números
 
 #Primeira visualizaçao
-wordcloud(CORPO,min.freq=2,max.words=100, scale = c(1.8,.2))
+wordcloud(CORPO,min.freq=2,max.words=100, scale = c(1,.5))
 formatacao <- brewer.pal(8,"Dark2")
-wordcloud(CORPO,min.freq=2,max.words=100, random.order=T, colors=formatacao, scale = c(1.8,.2))
+wordcloud(CORPO,min.freq=2,max.words=100, random.order=T, colors=formatacao, scale = c(1,.5))
 
 #Mas ainda aparece muito lixo
-CORPO<-tm_map(CORPO, removeWords, c("ter", "apenas", "nesta","sobre","algo", "quer", "aqui","ainda","via", "após","diz","já","ter", "estão", "pra","são","vai", "pra", "ser", "passaporte", "vacina")) #tirar mais palavras indesejadas
+CORPO<-tm_map(CORPO, removeWords, c("ter","da", "disse", "apenas", "nesta","sobre","algo", "quer", "aqui","ainda","via", "após","diz","já","ter", "estão", "pra","são","vai", "pra", "ser", "passaporte", "vacina")) #tirar mais palavras indesejadas
 
 #Segunda visualizaçao
-wordcloud(CORPO,min.freq=200,max.words=100, scale = c(1.8,.2))
+wordcloud(CORPO,min.freq=2,max.words=100, scale = c(1,.5))
 formatacao <- brewer.pal(8,"Dark2")
-wordcloud(CORPO,min.freq=200,max.words=100, random.order=T, colors=formatacao, scale = c(1.8,.2))
+wordcloud(CORPO,min.freq=2,max.words=100, random.order=T, colors=formatacao, scale = c(1,.5))
 
 #####
-#Limpeza do texto com a Document Term Matrix
+#TF-IDF
 tweets_dtm <- DocumentTermMatrix(CORPO)   
-tweets_dtm
-tweets_frequencia <- colSums(as.matrix(tweets_dtm))   
+tweets.tfidf <- weightTfIdf(tweets_dtm)
+tweets.tfidf
+tweets_frequencia <- colSums(as.matrix(tweets.tfidf))   
 length(tweets_frequencia) 
 
 #Removendo termos esparços
-tweets_dtms <- removeSparseTerms(tweets_dtm, 0.98) 
+tweets_dtms <- removeSparseTerms(tweets_dtm, 0.7) 
 tweets_dtms
 tweets_frequencia <- colSums(as.matrix(tweets_dtms))   
 length(tweets_frequencia) 
@@ -63,9 +63,11 @@ grafico
 
 #####
 #Machine learning - Clustering
-tweets_dtms2 <- removeSparseTerms(tweets_dtms, 0.70)
-tweets_dtms2
-distancia <- dist(t(tweets_dtms2), method="euclidian")   
+distancia <- dist(t(tweets_dtms), method="euclidian")   
+dendograma <- hclust(d=distancia, method="complete")
+plot(dendograma, hang=-1,main = "Dendograma Jornal - Passaporte da Vacina",
+     xlab = "Distancia",
+     ylab = "Altura")  
 
 #Elbow Method
 set.seed(123) 
@@ -75,6 +77,7 @@ wss
 plot( 1:k.max , wss, type = "b" , pch = 19 , frame = FALSE , 
       xlab = "Número de clusters K", ylab = "Soma total dos quadrados dentro dos clusters") 
 
+#Silhouette Method
 library(fpc)
 pamk.best <- pamk(distancia)
 cat("Número de clusters estimado pelo método silhouette width:", pamk.best$nc, "\n")
@@ -82,7 +85,7 @@ plot(pam(distancia, pamk.best$nc))
 
 #Clustering - K-Means
 kmeans_btc <- kmeans(distancia, 2)   
-clusplot(as.matrix(distancia), kmeans_btc$cluster, color=T, shade=T, labels=3, lines=0,
+clusplot(as.matrix(distancia), kmeans_btc$cluster, color=T, shade=T, labels=3,col.p = kmeans_btc$cluster, lines=0,
          main = "K-Means Jornais Passaporte da Vacina",
          xlab = "PC1",
          ylab = "PC2") 
