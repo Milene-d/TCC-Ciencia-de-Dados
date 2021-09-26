@@ -1,6 +1,6 @@
 library(readxl)
 voto_jornal <- read_excel("C:/Users/milen/Desktop/jornal.xlsx")
-View(voto)
+View(voto_jornal)
 
 #Preparando os dados#
 library(wordcloud)
