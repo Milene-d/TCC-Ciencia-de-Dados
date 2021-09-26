@@ -64,11 +64,7 @@ grafico
 
 #####
 #Machine learning - Clustering
-distancia <- dist(t(tweets_dtms), method="euclidian")   
-dendograma <- hclust(d=distancia, method="complete")
-plot(dendograma, hang=-1,main = "Dendograma Jornal - Passaporte da Vacina",
-     xlab = "Distancia",
-     ylab = "Altura")  
+distancia <- dist(t(tweets_dtms), method="euclidian")     
 
 #Elbow Method
 set.seed(123) 
