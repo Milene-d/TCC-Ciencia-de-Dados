@@ -1,6 +1,5 @@
 library(readxl)
-Save <- read_excel("C:/Users/milen/Desktop/Save.xlsx", 
-                   sheet = "tt_totais")
+Save <- read_excel("C:/Users/milen/Desktop/Save.xlsx", sheet = "tt_totais")
 View(Save)
 
 #Passando o formato de caracter para data
